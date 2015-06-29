@@ -1,103 +1,50 @@
-/*body {
-	font-family: "Helvetica Neue", Helvetica, sans-serif;
-	width: 1140px;
-	margin: 0 auto;
-	font-size: 14px;
-	background-color: #eee;
-	line-height: 115%;
-}*/
-
-a {
-	color: black;
+code {
+	background: none;
 }
 
-svg {
-	margin-top: 10px;
-	margin-bottom: 1px;
-	z-index: -100;
-}
-.about {
-	width: 550px;
-	top: 13px;
-	margin-bottom: 100px;
-	color: #666;
-	line-height: 17px;
-	position: absolute;
-	right: 80px;
-	text-align: right;
-	font-size: 12px;
-}
-.about div {
-	margin-bottom: 5px;
+.chord path {
+  fill-opacity: .67;
+  stroke: #000;
+  stroke-width: .5px;
 }
 
-/* Points */
-.points path {
-	opacity: 0;
+.bs-docs
+{
+    position: relative;
+    margin: 15px 0;
+    padding: 39px 19px 14px;
+    background-color: white;
+    border: 1px solid #DDD;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 }
 
-.points circle {
-	pointer-events: none;
+.bs-docs-example 
+{
+    position: relative;
+    margin: 15px 0;
+    padding: 39px 19px 14px;
+    background-color: white;
+    border: 1px solid #DDD;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 }
-
-.points circle.hover {
-	stroke: black;
+ 
+.bs-docs-example::after
+{
+    content: "Código";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: whiteSmoke;
+    border: 1px solid #DDD;
+    color: #9DA0A4;
+    -webkit-border-radius: 4px 0 4px 0;
+    -moz-border-radius: 4px 0 4px 0;
+    border-radius: 4px 0 4px 0;
 }
-
-
-/* Highlighter */
-circle.highlighter {
-	fill: none;
-	opacity: 0;
-	stroke: black;
-	stroke-width: 2px;
-	pointer-events: none;
-}
-
-
-/* Month line */
-.month.line path {
-	fill: none;
-	stroke: black;
-	opacity: 0.4;
-	stroke-width: 1px;
-}
-
-
-/* Tooltip */
-g.tooltip {
-	pointer-events: none;
-	opacity: 0;
-}
-g.tooltip path {
-	fill: #aaa;
-}
-g.tooltip .content text {
-	text-anchor: middle;
-	fill: black;
-}
-g.tooltip text.mytitle {
-	font-weight: bold;
-}
-g.tooltip text.temp {
-	font-size: 16px;
-}
-
-
-/* Axes */
-.axis text {
-	font-size: 10px;
-}
-.axis path {
-	display: none;
-}
-.axis line {
-	stroke: #ccc;
-}
-.y.axis line {
-	stroke-dasharray: 1,1;
-}
-.y.axis text {
-	text-anchor: end !important;
-}
-

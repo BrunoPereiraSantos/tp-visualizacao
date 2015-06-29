@@ -24,6 +24,8 @@
 	    <!--<link rel="stylesheet" href="css/reset.css">-->
 	    <link rel="stylesheet" href="css/style.css">
 
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
 	    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	    <!--[if lt IE 9]>
@@ -45,27 +47,275 @@
 		        <li><a href="../visualizacao-1/index.html">Visualização 1</a></li>
 		        <li><a href="#">Visualização 2</a></li> 
 		        <li><a href="#">Visualização 3</a></li> 
-		        <li class="active"><a href="#">Tutorial</a></li> 
+		        <li class="active"><a href="#"><code>&lt; Tutorial Chord /&gt;</code></a></li> 
 		      </ul>
 		    </div>
 		  </div>
 		</nav>
 
-		<div class="container-fluid">
+		<div class="container">
 			<div class="row">
-				<div class="col-md-6">
-					<h2>Tutorial Chord</h2>
+				<div class="col-md-4">
 
+					
+
+			          <div class="bs-docs">
+							<code style="font-size:20px;">&lt; Contato /&gt;</code>
+
+			            <address>
+			              <strong>Autores:.</strong><br>
+			              Bruno P. S.<br>
+			              Clayson Sales<br>
+			              Jefferson Rayneres<br>
+			            </address>
+			            <address>
+			              <strong>E-mail</strong><br>
+			              <a href="mailto:#">{bruno.ps, claysonceles, jeff}@dcc.ufmg.br</a>
+			            </address>
+
+			          	<br>
+			          	<a class="btn btn-info" href="./js/chord.js">Código</a>
+			          </div>
 				</div>
 
+				<div class="col-md-8">
+					<div class="text-center">
+						<code style="font-size:35px;">&lt; Gráfico Chord /&gt;</code>
+					</div>
+					<div id='chart'>
+					</div>
+				</div>
 				
 			</div>
 
 		</div> <!-- end container-fluid -->
 
 
+		<div class="container">
+
+			<div class="row">
+				<div class="col-md-4">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 1</h4>
+			          	<p>
+			          		Para desenhar o gráfico chord apresentado neste tutorial,
+			          		os dados necessitam esta em em forma de matriz.
+			          		Nesta matriz, linhas e colunas representam a faixa do entorno do Chord e os valores definem
+			          		a espessura da areasta que liga as faixas. Abaixo vemos um exemplo dessa matriz.
+			          	</p>
+			            <pre><code>var</code> <var>matrix</var> = [
+  [11975,  5871, 8916, 2868],
+  [ 1951, 10048, 2060, 6171],
+  [ 8010, 16145, 8090, 8045],
+  [ 1013,   990,  940, 6907]
+];</pre>
+			            
+			          </div>
+				</div>
+
+				<div class="col-md-4">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 2</h4>
+			          	<p>
+			          		Em seguida, com o layout chord do D3 especificamos um valor de padding entre as faixas do chord,
+			          		como será a ordenação das faixas (meste caso de forma descendente) e passamos a matriz com os dados que irão compor o gráfico.
+
+			          		Também definimos o tamanho que nosso futuro <code>&lt;svg&gt;</code> conterá, bem como o raio interno e externo do chord. 
+			          	</p>
+			            <pre>var chord = d3.layout.chord()
+    .padding(.05)
+    .sortSubgroups(d3.descending)
+    .matrix(matrix);</pre>
+			            
+			          </div>
+				</div>
+
+				<div class="col-md-4">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 3</h4>
+			          	<p>
+			          		Agora definimos o tamanho que nosso futuro <code>&lt;svg&gt;</code> conterá, bem como o raio interno e externo do chord. 
+			          		Também definimos a variável <var>fill</var> que conterá uma sequência de corres.
+			          	</p>
+			            <pre>var width = 960, height = 500,
+    innerRadius = Math.min(width, 
+    		height) * .41,
+    outerRadius = innerRadius * 1.1;
+
+    var fill = d3.scale.ordinal()
+    .domain(d3.range(4))
+    .range(["#000000", "#FFDD89", 
+    "#957244", "#F26223", "#F26223"]
+    );</pre>
+			            
+			          </div>
+				</div>
+
+			</div> <!-- end row 1 -->
+
+			<div class="row">
+				<div class="col-md-6">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 4</h4>
+			          	<p>
+			          		Neste passo inserimos criamos e inserimos o <code>&lt;svg&gt;</code> no <code>&lt;svg&gt;</code> da página. Note que os atributos de comprimento e largura do nosso gráfico foram passados como atributos do <code>&lt;svg&gt;</code> bem como foi realizado um deslocamento para o meio do <code>&lt;svg&gt;</code> ao realizar um o transform nos subelementos do <code>&lt;g&gt;</code>.
+			          	</p>
+			            <pre>var svg = d3.select("body")
+	.append("svg")
+	.attr("width", width)
+	.attr("height", height)
+	  .append("g")
+	  .attr("transform",
+	  "translate(" + width/2 + "," + height/2 + ")");</pre>
+			            
+			          </div>
+				</div>
+
+				<div class="col-md-6">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 5</h4>
+			          	<p>
+			          		Aqui usamos os dados passados para o layout chord (passo 2) para inserir elementos path, os quais receberão cores de preenchimento e stroke, cores estas retornadas pela função escala ordinal (passo 3). Além disso, inseremos elementos <code>&lt;g&gt;</code> do tipo arc, os raquis recebem os valores de ráio interno e externo definidos (passo 3), bem como efeito de enforque ao passar o mouse sobre os arcos usando a função <code>fade() que será explicada posteriormente.</code>
+			          	</p>
+			            <pre>svg.append("g").selectAll("path").data(chord.groups)
+.enter().append("path")
+  .style("fill", function(d) { return fill(d.index); })
+  .style("stroke", function(d) { return fill(d.index); })
+  .attr("d", 
+   d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
+    .on("mouseover", fade(.1))
+    .on("mouseout", fade(1));</pre>
+			            
+			          </div>
+				</div>
+			</div><!-- end row 2 -->
+
+			<div class="row">
+
+				<div class="col-md-6">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 6</h4>
+			          	<p>
+			          		Nesta etapa adicionamos ticks nas faxas. Para tanto inserimos elementos <code>&lt;g&gt;</code> adicionais para comportar o valor do tick. Posteriormente falaremos sobre <code>groupTicks</code>, por hora, <code>groupTicks</code> é uma função que retorna os valores dos ticks. Finalmente movemos os elementos <code>&lt;g&gt;</code> adicionados para posições no entorno das faxas.
+			          	</p>
+			            <pre>var ticks = svg.append("g").selectAll("g")
+    .data(chord.groups)
+  .enter().append("g").selectAll("g")
+    .data(groupTicks)
+  .enter().append("g")
+    .attr("transform", function(d) {
+      return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+          + "translate(" + outerRadius + ",0)";
+    });
+</pre>
+			            
+			          </div>
+				</div>
+
+				<div class="col-md-6">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 7</h4>
+			          	<p>
+			          		Nesta etapa, adicionamos pequenos seguimentos de linha em cada faixa, bem como o valor os rótulos. Para tanto utilizamos os valores inseridos no passo anteriror (variável ticks). Abaixo vemos o código para essas modificações.
+			          	</p>
+			            <pre>ticks.append("line")
+    .attr("x1", 1)
+    .attr("y1", 0)
+    .attr("x2", 5)
+    .attr("y2", 0)
+    .style("stroke", "#000");
+
+ticks.append("text")
+    .attr("x", 8)
+    .attr("dy", ".35em")
+    .attr("transform", function(d) { return d.angle > Math.PI ? "rotate(180)translate(-16)" : null; })
+    .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+    .text(function(d) { return d.label; });
+</pre>
+			            
+			          </div>
+				</div>
+
+			</div><!-- end row 3 -->
+
+			<div class="row">
+
+				<div class="col-md-6">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 8</h4>
+			          	<p>
+			          		Agora inserimos as arestas entre as faixas. Para tanto, com os valores das "cordas" inseridos no passo 2 ao layout chord, adicionamos os "paths" apropriados.
+			          	</p>
+			            <pre>svg.append("g")
+    .attr("class", "chord")
+  .selectAll("path")
+    .data(chord.chords)
+  .enter().append("path")
+    .attr("d", d3.svg.chord().radius(innerRadius))
+    .style("fill", function(d) { return fill(d.target.index); })
+    .style("opacity", 1);</pre>
+			            
+			          </div>
+				</div>
+
+				<div class="col-md-6">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 9</h4>
+			          	<p>
+			          		No passo 6 a função <code>groupTicks</code> foi utilizada. Agora nós estamos prontos para descrevẽ-la. Esta função retorna um vetor de ticks os quais serão utilizados para criar os seguimentos de linhas para representar apropriadamente esses ticks. Esta função reparte a faixa para um número justo de ticks, verifica os ângulos que cada um deve ter e os retorna.
+			          	</p>
+			            <pre>function groupTicks(d) {
+  var k = (d.endAngle - d.startAngle) / d.value;
+  return d3.range(0, d.value, 1000).map(function(v, i) {
+    return {
+      angle: v * k + d.startAngle,
+      label: i % 5 ? null : v / 1000 + "k"
+    };
+  });
+}</pre>
+			            
+			          </div>
+				</div>
+
+
+			</div><!-- end row 4 -->
+
+			<div class="row">
+
+				<div class="col-md-6">
+
+			          <div class="bs-docs-example text-justify">
+			            <h4>Passo 10</h4>
+			          	<p>
+			          		Esta função realça um arco para uma opacidade passada como parâmetro. Esta função é utilizada no 5 passo deste tutorial. Observe que lá a função fade é adicionada aos arcos usando o atributo <code>mouseover</code> para destacar uma aresta e adicionar opacidade nas demais.
+			          	</p>
+			            <pre>function fade(opacity) {
+  return function(g, i) {
+    svg.selectAll(".chord path")
+        .filter(function(d) { return d.source.index != i && d.target.index != i; })
+      .transition()
+        .style("opacity", opacity);
+  };
+}</pre>
+			            
+			          </div>
+				</div>
+
+			</div><!-- end row 5 -->
+
+		</div>
+
 				
 		<script src="js/d3.v3.min.js"></script>
-		<script src="js/chart.js"></script>
+		<script src="js/chord.js"></script>
 	</body>
 </html>
