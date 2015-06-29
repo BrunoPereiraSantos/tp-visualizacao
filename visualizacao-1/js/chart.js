@@ -3,7 +3,35 @@ function init() {
     var a = d3.extent(data, function(a) {
         return a.yr
     });
-    years = d3.range(a[0], a[1] + 1), xScale = d3.scale.ordinal().domain(years).rangePoints([0, width]), yScale = d3.scale.linear().domain([-2, 18]).range([height, 0]), colorScale = d3.scale.linear().domain([-2, 14, 18]).range(["lightblue", "orange", "red"]), monthScale = d3.scale.ordinal().domain(d3.range(0, 12)).rangePoints([0, width]), xAxis = d3.svg.axis().tickValues([1910, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2e3, 2010, 2014]).scale(xScale), yAxis = d3.svg.axis().orient("right").ticks(10).tickSize(width).scale(yScale).tickFormat(function(a) {
+
+    var graus = d3.extent(data, function(a) {
+        return a.mean
+    });
+
+    var cores = [];
+    cores.push(graus[0]);
+    cores.push((graus[0] + graus[1]) / 2 );
+    cores.push(graus[1]);
+    
+
+    var xtics = [a[0]];
+    quantos_ticks = 11;
+    tam_espacos = (a[1] - a[0]) / quantos_ticks;
+
+    for (var i = 1; i < quantos_ticks; i++ ){
+        xtics.push(xtics[xtics.length -1] + Math.ceil(tam_espacos));
+    }
+
+    years = d3.range(a[0], a[1] + 1), 
+    xScale = d3.scale.ordinal().domain(years).rangePoints([0, width]), 
+    /*yScale = d3.scale.linear().domain([-2, 18]).range([height, 0])*/
+    yScale = d3.scale.linear().domain(graus).range([height, 0]), 
+    colorScale = d3.scale.linear().domain(cores).range(["blue", "orange", "red"]), 
+    monthScale = d3.scale.ordinal().domain(d3.range(0, 12)).rangePoints([0, width]), 
+
+    xAxis = d3.svg.axis().tickValues(xtics).scale(xScale), 
+    
+    yAxis = d3.svg.axis().orient("right").ticks(12).tickSize(width).scale(yScale).tickFormat(function(a) {
         return a + "°C"
     });
     var b = 20;
@@ -48,7 +76,7 @@ function updateMonthLine() {
 }
 
 function updateTooltip(a, b, c, d, e) {
-    d3elements.tooltip.style("opacity", .85).attr("transform", "translate(" + a + "," + b + ")"), d3elements.tooltip.select(".content .title").text(months[c] + " " + d), d3elements.tooltip.select(".content .temp").text(e + "°C")
+    d3elements.tooltip.style("opacity", .85).attr("transform", "translate(" + a + "," + b + ")"), d3elements.tooltip.select(".content .title").text(months[c-1] + " " + d), d3elements.tooltip.select(".content .temp").text(e + "°C")
 }
 
 function updateHighlighter(a, b) {
@@ -74,6 +102,7 @@ function updatePoints() {
         return a.x
     })
 }
+
 var width = 1e3,
     height = 550,
     radius = 2.5,
@@ -98,7 +127,20 @@ var width = 1e3,
     }).y(function(a) {
         return a.y
     }),
-    metOfficeURL = "http://www.metoffice.gov.uk/climate/uk/summaries/";
-d3.json("data/temp.json", function(a, b) {
-    data = b, init(), updatePointPositions(), updatePoints(), updateAxes()
-});
+    metOfficeURL = "../";
+
+    d3.json("data/bh.json", function(a, b) {
+            data = b, init(), updatePointPositions(), updatePoints(), updateAxes()
+        });
+    
+
+    function myFunction(jsonfile, nomeCidade) {
+        //document.getElementById("chart").innerHTML = "<svg width=\"1100\" height=\"700\">\r\n\t\t\t\t\t\t  <defs>\r\n\t\t\t\t\t\t    <filter id=\"dropshadow\" height=\"130%\">\r\n\t\t\t\t\t\t      <feGaussianBlur in=\"SourceAlpha\" stdDeviation=\"3\"\/> \r\n\t\t\t\t\t\t      <feOffset dx=\"2\" dy=\"2\" result=\"offsetblur\"\/>\r\n\t\t\t\t\t\t      <feComponentTransfer>\r\n\t\t\t\t\t\t        <feFuncA type=\"linear\" slope=\"0.2\"\/>\r\n\t\t\t\t\t\t      <\/feComponentTransfer>\r\n\t\t\t\t\t\t      <feMerge> \r\n\t\t\t\t\t\t        <feMergeNode\/>\r\n\t\t\t\t\t\t        <feMergeNode in=\"SourceGraphic\"\/> \r\n\t\t\t\t\t\t      <\/feMerge>\r\n\t\t\t\t\t\t    <\/filter>\r\n\t\t\t\t\t\t  <\/defs>\r\n\t\t\t\t\t\t\t<g class=\"container\" transform=\"translate(50, 80)\">\r\n\t\t\t\t\t\t\t\t<g class=\"x axis\" transform=\"translate(0, 570)\"><\/g>\r\n\t\t\t\t\t\t\t\t<g class=\"y axis\"><\/g>\r\n\t\t\t\t\t\t\t\t<g class=\"month line\">\r\n\t\t\t\t\t\t\t\t\t<path><\/path>\r\n\t\t\t\t\t\t\t\t<\/g>\r\n\t\t\t\t\t\t\t\t<g class=\"points\"><\/g>\r\n\t\t\t\t\t\t\t\t<circle class=\"highlighter\" r=\"6\"><\/circle>\r\n\t\t\t\t\t\t\t\t<g class=\"tooltip\" transform=\"translate(-1000, 0)\">\r\n\t\t\t\t\t\t\t\t\t<g class=\"wrapper\" transform=\"translate(-45, -75)\">\r\n\t\t\t\t\t\t\t\t\t\t<path d=\"M5,0l78,0a6,6 0 0 1 6,6l0,40a6,6 0 0 1 -6,6l-22,0L45,70L50,52L6,52a6,6 0 0 1 -6,-6l0,-40a6,6 0 0 1 6,-6\" filter=\"url(#dropshadow)\"><\/path>\r\n\t\t\t\t\t\t\t\t\t\t<g class=\"content\" transform=\"translate(45, 20)\">\r\n\t\t\t\t\t\t\t\t\t\t\t<text class=\"title\" translate=\"transform(0,3)\"><\/text>\r\n\t\t\t\t\t\t\t\t\t\t\t<text class=\"temp\" transform=\"translate(0,21)\"><\/text>\r\n\t\t\t\t\t\t\t\t\t\t<\/g>\r\n\t\t\t\t\t\t\t\t\t<\/g>\r\n\t\t\t\t\t\t\t\t<\/g>\r\n\t\t\t\t\t\t\t<\/g>\r\n\t\t\t\t\t\t<\/svg>";
+        
+        document.getElementById("cidade").innerHTML = nomeCidade;
+        
+        d3.json("data/"+jsonfile, function(a, b) {
+            data = b, init(), updatePointPositions(), updatePoints(), updateAxes()
+        });
+        
+    }
